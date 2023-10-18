@@ -1,0 +1,43 @@
+variableType,variableName,description
+Labels,movie_title,Film's official title
+,movie_id,ID code given to the film
+,imdb_link,Film's IMDb URL
+Dependent variable,imdb_score,The IMDb rating (one month after it was first voted on by users)
+Predictors,movie_budget,The movie's budget (Note: Only about half of the films reveal their budgets to the public)
+,release_day,Release day
+,release_month,Release month
+,release_year,Release year
+continuous / discrete,duration,Duration of the film (in minutes) 
+categorical,language,The dominant language in the film (Note: Some films are silent)
+categorical,country,Main country where the film was produced
+continuous / discrete,maturity_rating,The content rating of the film (using the motion picture content rating system)
+categorical / continuous,aspect_ratio,The aspect ratio of the image of the film (ratio of an the width to the height)
+categorical,distributor,Name of the main distributor of the film
+continuous,nb_news_articles,Number of article in the news of the main country about the film
+categorical,director,Name of the main director of the movie
+categorical,actor1,Name of the main actor/actress
+continuous / discrete,actor1_star_meter,The 2022 ranking of actors/actresses made by IMDbPro -- lower means more famous (https://m.imdb.com/chart/starmeter) (Note: You can get a free 30-day trial in IMDb pro)
+categorical,actor2,Name of the second main actor/actress
+continuous / discrete,actor2_star_meter,The 2022 ranking of actors/actresses made by IMDbPro -- lower means more famous (https://m.imdb.com/chart/starmeter) (Note: You can get a free 30-day trial in IMDb pro)
+categorical,actor3,Name of the third main actor/actress
+continuous / discrete,actor3_star_meter,The 2022 ranking of actors/actresses made by IMDbPro -- lower means more famous (https://m.imdb.com/chart/starmeter) (Note: You can get a free 30-day trial in IMDb pro)
+binary,colour_film,"""Color"" if the image of the film is in color; ""Black and White"" if it is in black and white."
+text,genres,List of genres for which the movie classifies into
+continuous / discrete,nb_faces,Number of faces in the main poster of the movie.
+text,plot_keywords,Keywords in the main IMDb plot of the film
+binary,action,"1 if the film has this genre, 0 if not"
+binary,adventure,"1 if the film has this genre, 0 if not"
+binary,scifi,"1 if the film has this genre, 0 if not"
+binary,thriller,"1 if the film has this genre, 0 if not"
+binary,musical,"1 if the film has this genre, 0 if not"
+binary,romance,"1 if the film has this genre, 0 if not"
+binary,western,"1 if the film has this genre, 0 if not"
+binary,sport,"1 if the film has this genre, 0 if not"
+binary,horror,"1 if the film has this genre, 0 if not"
+binary,drama,"1 if the film has this genre, 0 if not"
+binary,war,"1 if the film has this genre, 0 if not"
+binary,animation,"1 if the film has this genre, 0 if not"
+binary,crime,"1 if the film has this genre, 0 if not"
+continuous / discrete,movie_meter_IMDBpro,The 2023 ranking of movie made by IMDbPro -- lower means more popular (https://m.imdb.com/chart/moviemeter) (Note: You can get a free 30-day trial in IMDb pro)
+categorical,cinematographer,Name of the main cinematographer of the film
+categorical,production_company,Name of the main production company involved in the film
