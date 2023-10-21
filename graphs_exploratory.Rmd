@@ -1,0 +1,106 @@
+---
+title: "MGSC661 Midterm"
+output: pdf_document
+date: "2023-10-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read in CSV
+
+```{r}
+movie = read.csv("IMDB_data_fall_2023.csv")
+attach(movie)
+```
+
+```{r}
+summary(movie)
+```
+
+```{r}
+summary(movie$imdb_score)
+```
+
+## Data Exploration - Plots
+
+```{r}
+library(ggplot2)
+require(methods)
+```
+
+```{r}
+hist(imdb_score, breaks = 100, col = "skyblue")
+```
+
+```{r}
+boxplot(movie_budget, col = "orange", boxwex = 0.5)
+title("Boxplot for movie_budget Variable")
+```
+```{r}
+hist(duration, breaks = 100, col = "skyblue")
+```
+```{r}
+plot(movie$movie_budget, movie$imdb_score, col = "grey", main = "imdb_score VS budget", xlab = "movie_budget", ylab = "imdb_score")
+```
+```{r}
+plot(movie$duration, movie$imdb_score, col = "grey", main = "imdb_score VS duration", xlab = "duration", ylab = "imdb_score")
+```
+```{r}
+plot(movie$nb_faces, movie$imdb_score, col = "grey", main = "score VS nb_faces", xlab = "nb_faces", ylab = "imdb_score")
+```
+
+```{r}
+boxplot(actor1_star_meter, col = "orange", boxwex = 0.5)
+title("Boxplot for actor1_star_meter Variable")
+```
+```{r}
+plot(movie$actor1_star_meter, movie$imdb_score, col = "grey", main = "score VS actor1_star_meter", xlab = "actor1_star_meter", ylab = "imdb_score")
+```
+```{r}
+boxplot(actor2_star_meter, col = "orange", boxwex = 0.5)
+title("Boxplot for actor2_star_meter Variable")
+```
+
+```{r}
+plot(movie$actor2_star_meter, movie$imdb_score, col = "grey", main = "score VS actor2_star_meter", xlab = "actor2_star_meter", ylab = "imdb_score")
+```
+```{r}
+boxplot(actor3_star_meter, col = "orange", boxwex = 0.5)
+title("Boxplot for actor3_star_meter Variable")
+```
+```{r}
+plot(movie$actor3_star_meter, movie$imdb_score, col = "grey", main = "score VS actor3_star_meter", xlab = "actor3_star_meter", ylab = "imdb_score")
+```
+```{r}
+hist(movie_meter_IMDBpro, breaks = 100, col = "skyblue")
+```
+
+```{r}
+plot(movie$movie_meter_IMDBpro, movie$imdb_score, col = "grey", main = "score VS movie_meter_IMDBpro", xlab = "movie_meter_IMDBpro", ylab = "imdb_score")
+```
+```{r}
+summary(movie$movie_meter_IMDBpro)
+```
+
+```{r}
+summary(movie$release_year)
+```
+
+```{r}
+plot(movie$release_year, movie$imdb_score, col = "grey", main = "score VS release_year", xlab = "release_year", ylab = "imdb_score")
+```
+
+```{r}
+boxplot(aspect_ratio, col = "orange", boxwex = 0.5)
+title("Boxplot for aspect_ratio Variable")
+```
+
+```{r}
+plot(movie$aspect_ratio, movie$imdb_score, col = "grey", main = "score VS aspect_ratio", xlab = "aspect_ratio", ylab = "imdb_score")
+```
+
+
+
+
