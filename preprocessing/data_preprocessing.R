@@ -52,11 +52,25 @@ quantvars=imdb[, c(1, 2, 3, 5, 6, 10, 12, 15,
 corr_matrix=cor(quantvars)
 round(corr_matrix,3)
 
+
 ## Collinearity
 reg4 <- lm(imdb_score ~ movie_budget + release_day + release_year + duration +
              aspect_ratio + nb_news_articles + actor1_star_meter + actor2_star_meter +
              actor3_star_meter + nb_faces + movie_meter_IMDBpro, data = imdb)
 vif(reg4) # result shows that no collinearity issue with the selected features
+
+
+### Check for multicollinearity for plot_keywords and genres
+slice_plot_gen <- imdb[, c(22:34, 38:45, 46:53)]
+corr_plot_gen <- cor(slice_plot_gen)
+round(corr_plot_gen, 3)
+# not include the variable music since singularities
+reg5 <- lm(imdb_score ~ action + adventure + scifi + thriller + musical + romance +
+             western + sport + horror + drama + war + animation + crime + biography + comedy +
+             fantasy + history + mystery + family + documentary + plot_topic1 +
+             plot_topic2 + plot_topic3 + plot_topic4 + plot_topic5 + plot_topic6 +
+             plot_topic7 + plot_topic8, data = imdb)
+vif(reg5)
 
 ## Outlier
 ### Film characteristics
