@@ -1,0 +1,206 @@
+---
+title: "Untitled"
+author: "Hongyi zhan"
+date: "2023-10-23"
+output: pdf_document
+---
+
+# Standardize and recalssification
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+imdb <- read.csv('imdb_first_step_cleaning.csv')
+imdb <- subset(imdb, select = -c(genres, plot_keywords))
+#reg4 <- lm(imdb_score ~. , data = imdb)
+imdb$country <- ifelse(imdb$country != "USA", 0, 1)
+imdb$language <- ifelse(imdb$language != "English", 0, 1)
+imdb$release_month <- ifelse(imdb$release_month %in% c("Oct", "Nov", "Dec"), 0, 1)
+imdb$maturity_rating <- ifelse(imdb$maturity_rating %in% c("TV-14", "TV-G"), 0, 1)
+imdb$colour_film <- ifelse(imdb$colour_film !="Color", 0, 1)
+
+min_value <- min(imdb$movie_budget)
+max_value <- max(imdb$movie_budget)
+imdb$movie_budget <- (imdb$movie_budget - min_value) / (max_value - min_value)
+
+min_value <- min(imdb$release_year)
+max_value <- 2023
+imdb$release_year <- (imdb$release_year - min_value) / (max_value - min_value)
+
+min_value <- min(imdb$duration)
+max_value <- max(imdb$duration)
+imdb$duration <- (imdb$duration - min_value) / (max_value - min_value)
+
+min_value <- min(imdb$nb_news_articles)
+max_value <- max(imdb$nb_news_articles)
+imdb$nb_news_articles <- (imdb$nb_news_articles - min_value) / (max_value - min_value)
+
+
+min_value <- min(imdb$aspect_ratio)
+max_value <- max(imdb$aspect_ratio)
+imdb$aspect_ratio <- (imdb$aspect_ratio - min_value) / (max_value - min_value)
+
+
+min_value <- min(imdb$movie_meter_IMDBpro)
+max_value <- max(imdb$movie_meter_IMDBpro)
+imdb$movie_meter_IMDBpro <- (imdb$movie_meter_IMDBpro - min_value) / (max_value - min_value)
+
+min_value <- min(imdb$nb_faces)
+max_value <- max(imdb$nb_faces)
+imdb$nb_faces <- (imdb$nb_faces - min_value) / (max_value - min_value)
+
+
+```
+
+
+# Backward seelction
+
+```{r}
+reg1 <- lm(imdb_score ~ movie_budget +  as.factor(release_month) +
+             release_year + duration + as.factor(language) + as.factor(country) +
+             as.factor(maturity_rating) + aspect_ratio +
+             nb_news_articles + as.factor(colour_film) +
+             nb_faces + action + adventure + scifi + thriller + musical + romance +
+             western + sport + horror + drama + war + animation + crime +
+             movie_meter_IMDBpro + biography + comedy + 
+             fantasy + history + mystery + family + documentary + plot_topic1 +
+             plot_topic2 + plot_topic3 + plot_topic4 + plot_topic5 + plot_topic6 +
+             plot_topic7 + plot_topic8 + actor1_star_meter +  actor2_star_meter +
+             actor3_star_meter, data = imdb)
+summary(reg1)
+
+# Perform forward selection using the step() function
+selected_model <- step(reg1, direction = "backward")
+
+# View the final selected model
+summary(selected_model)
+
+```
+
+# Lasso selection
+
+```{r}
+library(glmnet)
+y <- imdb$imdb_score
+imdb2 <- subset(imdb, select = -c(imdb_score,distributor,actor1,actor2,actor3,director,cinematographer,production_company))
+x <- as.matrix(imdb2)
+
+cv_model <- cv.glmnet(x, y, data = imdb, alpha = 1)
+best_lambda <- cv_model$lambda.min
+lasso_model_best <- glmnet(x, y, data = imdb, alpha = 1, lambda = best_lambda)
+# Access coefficients
+coef(lasso_model_best)
+
+```
+
+# Finish Selection
+
+```{r}
+model_bcs<- lm(formula = imdb_score ~ movie_budget + as.factor(release_month) + 
+    release_year + duration + as.factor(language) + as.factor(country) + 
+    as.factor(maturity_rating) + aspect_ratio + nb_news_articles + 
+    as.factor(colour_film) + nb_faces + action + adventure + 
+    thriller + musical + romance + horror + drama + animation + 
+    crime + movie_meter_IMDBpro + biography + comedy + history + 
+    family + documentary + plot_topic1 + plot_topic4, data = imdb)
+summary(model_bcs)
+
+model_lasso <- lm(formula = imdb_score ~ movie_budget + as.factor(release_month) + 
+    release_year + duration + as.factor(language) + as.factor(country) + 
+    as.factor(maturity_rating) + aspect_ratio + nb_news_articles + 
+    as.factor(colour_film) + nb_faces + action + adventure + musical + romance + western + sport + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + mystery +
+    family + documentary + plot_topic1, data = imdb)
+summary(model_lasso)
+```
+
+# Cross Validation for choose poly in backward selection
+
+```{r, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+library(boot)
+
+library(DAAG)
+
+degree_combinations <- expand.grid(a = 1:3, b = 1:3, c = 1:3)
+# Set the number of folds for cross-validation
+K <- 9
+mse = c()
+degrees <- c(1,2,3)
+index = 1
+# Function to calculate MSE for a combination of degrees
+for (i in 1:3) {
+  for (j in 1:3){
+    fo <- as.formula(paste("imdb_score ~ movie_budget + as.factor(release_month) + release_year + duration + as.factor(language) + as.factor(country) + as.factor(maturity_rating) + poly(aspect_ratio,",degrees[i],",raw = TRUE) + nb_news_articles + as.factor(colour_film) + poly(nb_faces,", degrees[j], ",raw = TRUE) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + plot_topic1 + plot_topic4"))
+
+    
+    train_control <- trainControl(method = "cv", number = 100)
+ 
+# training the model by assigning sales column
+# as target variable and rest other column
+# as independent variable
+    model <- train(fo, data = imdb, 
+               method = "lm",
+               trControl = train_control)
+    mse<-append(mse,model$results[2])
+    print(paste(i,j,model$results[2]))
+    
+  }
+}
+which.min(mse)
+```
+
+# Cross Validation for lasso feature
+
+```{r}
+fo_lasso <- as.formula(paste("imdb_score ~ movie_budget + as.factor(release_month) + 
+    release_year + duration + as.factor(language) + as.factor(country) + 
+    as.factor(maturity_rating) + aspect_ratio + nb_news_articles + 
+    as.factor(colour_film) + nb_faces + action + adventure + musical + romance + western + sport + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + mystery +
+    family + documentary + plot_topic1"))
+
+    
+    train_control <- trainControl(method = "cv", number = 100)
+ 
+# training the model by assigning sales column
+# as target variable and rest other column
+# as independent variable
+    model <- train(fo_lasso, data = imdb, 
+               method = "lm",
+               trControl = train_control)
+    print(paste(model$results[2]))
+```
+
+# Compare linear mixed model
+
+```{r}
+library(lme4)
+model.mix1 <- lmer(imdb_score ~ (1|release_month) + (1|release_year) + duration + as.factor(language) + as.factor(country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + plot_topic1 * plot_topic4 + (1 | director) + (1 | actor1)+ (1 | actor2)+ (1 | actor3)+(1|distributor) + (1|cinematographer) + (movie_budget|production_company), data = imdb)
+
+model.mix2 <- lmer(imdb_score ~  (1|release_year/release_month) + duration + as.factor(language) * as.factor(country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + (1|plot_topic1) + (1|plot_topic4) + (1 | director)*(1 | actor1) *(1 | actor2) + (movie_budget|production_company), data = imdb)
+
+model.mix3 <- lmer(imdb_score ~ (1|release_year/release_month) + duration + (1|language) * (1|country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + (1|colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + (1|plot_topic1) * (1|plot_topic4) + (1| director/actor1)+(movie_budget|production_company), data = imdb)
+
+anova(model.mix1,model.mix2,model.mix3)
+```
+
+# Calculate MSE
+
+```{r}
+library(MuMIn)
+set.seed(11)
+num_samples <- nrow(imdb)
+train_index <- sample(num_samples,num_samples*0.6)  ##create indexes for my training data
+train <- imdb[train_index,]
+test <- imdb[-train_index,]
+
+model.mix_train <- lmer(imdb_score ~ (1|release_year/release_month) + duration + (1|language) * (1|country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + (1|colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + (1|plot_topic1) * (1|plot_topic4) + (1| director/actor1)+(movie_budget|production_company), data = imdb)
+
+model_lm <- lm(imdb_score ~ movie_budget + as.factor(release_month) + release_year + duration + as.factor(language) + as.factor(country) + as.factor(maturity_rating)  + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + plot_topic1 * plot_topic4, data = train)
+
+pred <- predict(model.mix_train, imdb,allow.new.levels = TRUE)
+mae <- mean(abs(imdb$imdb_score - pred))
+mse <- mean((imdb$imdb_score - pred)**2)
+r.squaredGLMM(model.mix_train)
+summary(model_lm)
+```
