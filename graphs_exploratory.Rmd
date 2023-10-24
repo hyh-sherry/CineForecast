@@ -31,55 +31,79 @@ require(methods)
 ```
 
 ```{r}
+png(file="plots/hist_imdb_score.png", width=1000, height=600)
 hist(imdb_score, breaks = 100, col = "skyblue")
 ```
 
 ```{r}
+png(file="plots/movie_budget.png", width=800, height=500)
 boxplot(movie_budget, col = "orange", boxwex = 0.5)
 title("Boxplot for movie_budget Variable")
 ```
+
 ```{r}
+png(file="plots/hist_duration.png", width=1000, height=600)
 hist(duration, breaks = 100, col = "skyblue")
 ```
+
 ```{r}
+png(file="plots/imdb_vs_budget.png", width=800, height=450)
 plot(movie$movie_budget, movie$imdb_score, col = "grey", main = "imdb_score VS budget", xlab = "movie_budget", ylab = "imdb_score")
 ```
+
 ```{r}
+png(file="plots/imdb_vs_duration.png", width=800, height=450)
 plot(movie$duration, movie$imdb_score, col = "grey", main = "imdb_score VS duration", xlab = "duration", ylab = "imdb_score")
 ```
+
 ```{r}
+png(file="plots/imdb_vs_nbfaces.png", width=800, height=450)
 plot(movie$nb_faces, movie$imdb_score, col = "grey", main = "score VS nb_faces", xlab = "nb_faces", ylab = "imdb_score")
 ```
 
 ```{r}
+png(file="plots/actor1_star_meter.png", width=800, height=500)
 boxplot(actor1_star_meter, col = "orange", boxwex = 0.5)
 title("Boxplot for actor1_star_meter Variable")
 ```
+
 ```{r}
+png(file="plots/imdb_vs_actor1_star_meter.png", width=800, height=450)
 plot(movie$actor1_star_meter, movie$imdb_score, col = "grey", main = "score VS actor1_star_meter", xlab = "actor1_star_meter", ylab = "imdb_score")
 ```
+
 ```{r}
+png(file="plots/actor2_star_meter.png", width=800, height=500)
 boxplot(actor2_star_meter, col = "orange", boxwex = 0.5)
 title("Boxplot for actor2_star_meter Variable")
 ```
 
 ```{r}
+png(file="plots/imdb_vs_actor2_star_meter.png", width=800, height=450)
 plot(movie$actor2_star_meter, movie$imdb_score, col = "grey", main = "score VS actor2_star_meter", xlab = "actor2_star_meter", ylab = "imdb_score")
 ```
+
 ```{r}
+png(file="plots/actor3_star_meter.png", width=800, height=500)
 boxplot(actor3_star_meter, col = "orange", boxwex = 0.5)
 title("Boxplot for actor3_star_meter Variable")
 ```
+
 ```{r}
+png(file="plots/imdb_vs_actor3_star_meter.png", width=800, height=450)
 plot(movie$actor3_star_meter, movie$imdb_score, col = "grey", main = "score VS actor3_star_meter", xlab = "actor3_star_meter", ylab = "imdb_score")
 ```
+
 ```{r}
+png(file="plots/movie_meter.png", width=1000, height=600)
 hist(movie_meter_IMDBpro, breaks = 100, col = "skyblue")
 ```
 
 ```{r}
+png(file="plots/imdb_vs_movie_meter.png", width=800, height=450)
 plot(movie$movie_meter_IMDBpro, movie$imdb_score, col = "grey", main = "score VS movie_meter_IMDBpro", xlab = "movie_meter_IMDBpro", ylab = "imdb_score")
 ```
+
 ```{r}
 summary(movie$movie_meter_IMDBpro)
 ```
@@ -89,17 +113,35 @@ summary(movie$release_year)
 ```
 
 ```{r}
+png(file="plots/imdb_vs_release_year.png", width=800, height=450)
 plot(movie$release_year, movie$imdb_score, col = "grey", main = "score VS release_year", xlab = "release_year", ylab = "imdb_score")
 ```
 
 ```{r}
+png(file="plots/aspect_ratio.png", width=800, height=500)
 boxplot(aspect_ratio, col = "orange", boxwex = 0.5)
 title("Boxplot for aspect_ratio Variable")
 ```
 
 ```{r}
+png(file="plots/imdb_vs_aspect_ratio.png", width=800, height=450)
 plot(movie$aspect_ratio, movie$imdb_score, col = "grey", main = "score VS aspect_ratio", xlab = "aspect_ratio", ylab = "imdb_score")
 ```
+
+## After Preprocessing - Plots
+
+```{r}
+movie2 = read.csv("preprocessing/imdb_first_step_cleaning.csv")
+attach(movie2)
+```
+
+```{r}
+summary(movie$imdb_score)
+```
+
+
+
+
 
 
 
