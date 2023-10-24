@@ -16,7 +16,7 @@ attach(movie)
 ```
 
 ```{r}
-summary(movie)
+summary(movie2)
 ```
 
 ```{r}
@@ -136,11 +136,17 @@ attach(movie2)
 ```
 
 ```{r}
-summary(movie$imdb_score)
+summary(movie2)
 ```
 
-
-
+```{r}
+f1 = as.data.frame(table(movie2$plot_topic1))
+f1
+```
+```{r}
+f2 = as.data.frame(table(movie2$colour_film))
+f2
+```
 
 
 
