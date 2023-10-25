@@ -9,6 +9,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
 
 imdb <- read.csv('imdb_first_step_cleaning.csv')
 imdb <- subset(imdb, select = -c(genres, plot_keywords))
@@ -19,8 +20,11 @@ imdb$release_month <- ifelse(imdb$release_month %in% c("Oct", "Nov", "Dec"), 0, 
 imdb$maturity_rating <- ifelse(imdb$maturity_rating %in% c("TV-14", "TV-G"), 0, 1)
 imdb$colour_film <- ifelse(imdb$colour_film !="Color", 0, 1)
 
+# Replace values that appear only once with "other"
+
+
 min_value <- min(imdb$movie_budget)
-max_value <- max(imdb$movie_budget)
+max_value <- 300000000
 imdb$movie_budget <- (imdb$movie_budget - min_value) / (max_value - min_value)
 
 min_value <- min(imdb$release_year)
@@ -50,6 +54,31 @@ max_value <- max(imdb$nb_faces)
 imdb$nb_faces <- (imdb$nb_faces - min_value) / (max_value - min_value)
 
 
+```
+
+```{r}
+
+imdb <- imdb %>%
+  group_by(director) %>%
+  mutate(director = case_when(n() <= 2 ~ "other", between(n(), 3, 6) ~ "medium",
+      n() > 6 ~ "hot")) %>%
+  ungroup()
+
+imdb <- imdb %>%
+  group_by(actor1) %>%
+  mutate(actor1 = case_when(n() == 1 ~ "other", between(n(), 2, 5) ~ "medium",
+      n() > 5 ~ "hot")) %>%
+  ungroup()
+
+imdb <- imdb %>%
+  group_by(production_company) %>%
+  mutate(production_company = case_when(n() == 1 ~ "other", between(n(), 2, 7) ~ "medium",
+      n() > 7 ~ "big")) %>%
+  ungroup()
+
+imdb%>%
+  group_by(actor1) %>%
+  summarise(count = n())
 ```
 
 
@@ -175,7 +204,7 @@ fo_lasso <- as.formula(paste("imdb_score ~ movie_budget + as.factor(release_mont
 
 ```{r}
 library(lme4)
-model.mix1 <- lmer(imdb_score ~ (1|release_month) + (1|release_year) + duration + as.factor(language) + as.factor(country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + plot_topic1 * plot_topic4 + (1 | director) + (1 | actor1)+ (1 | actor2)+ (1 | actor3)+(1|distributor) + (1|cinematographer) + (movie_budget|production_company), data = imdb)
+model.mix1 <- lmer(imdb_score ~ (1|release_month) + (1|release_year) + duration + as.factor(language) + as.factor(country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + plot_topic1 * plot_topic4 + (1 | director) + (1 | actor1)+ (1 | actor2)+ (1 | actor3)+(1|distributor) + (1|cinematographer) + (movie_budget|production_company), data = train)
 
 model.mix2 <- lmer(imdb_score ~  (1|release_year/release_month) + duration + as.factor(language) * as.factor(country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + (1|plot_topic1) + (1|plot_topic4) + (1 | director)*(1 | actor1) *(1 | actor2) + (movie_budget|production_company), data = imdb)
 
@@ -190,17 +219,17 @@ anova(model.mix1,model.mix2,model.mix3)
 library(MuMIn)
 set.seed(11)
 num_samples <- nrow(imdb)
-train_index <- sample(num_samples,num_samples*0.6)  ##create indexes for my training data
+train_index <- sample(num_samples,num_samples*0.7)  ##create indexes for my training data
 train <- imdb[train_index,]
 test <- imdb[-train_index,]
 
-model.mix_train <- lmer(imdb_score ~ (1|release_year/release_month) + duration + (1|language) * (1|country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + (1|colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + (1|plot_topic1) * (1|plot_topic4) + (1| director/actor1)+(movie_budget|production_company), data = imdb)
+model.mix_train <- lmer(imdb_score ~ (1|release_year/release_month) + duration + (1|language) * (1|country) + as.factor(maturity_rating) + poly(aspect_ratio,2) + nb_news_articles + (1|colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + (1|plot_topic1) * (1|plot_topic4) + (1| director/actor1)+(movie_budget|production_company), data = train)
 
 model_lm <- lm(imdb_score ~ movie_budget + as.factor(release_month) + release_year + duration + as.factor(language) + as.factor(country) + as.factor(maturity_rating)  + nb_news_articles + as.factor(colour_film) + poly(nb_faces,2) + action + adventure + thriller + musical + romance + horror + drama + animation + crime + movie_meter_IMDBpro + biography + comedy + history + family + documentary + plot_topic1 * plot_topic4, data = train)
 
 pred <- predict(model.mix_train, imdb,allow.new.levels = TRUE)
-mae <- mean(abs(imdb$imdb_score - pred))
-mse <- mean((imdb$imdb_score - pred)**2)
+mae <- mean(abs(test$imdb_score - pred))
+mse <- mean((test$imdb_score - pred)**2)
 r.squaredGLMM(model.mix_train)
-summary(model_lm)
+#summary(model_lm)
 ```
