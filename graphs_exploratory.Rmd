@@ -29,6 +29,7 @@ summary(imdb$imdb_score)
 ## Data Exploration - Plots
 
 ```{r}
+library(car)
 library(ggplot2)
 require(methods)
 ```
@@ -193,7 +194,6 @@ summary(reg10)
 qqPlot(reg10, envelope=list(style="none"))
 ```
 
-
 #### Actor Star Meter
 ```{r}
 png(file="plots/box_actor1_star_meter.png", width=800, height=500)
@@ -269,21 +269,21 @@ summary(reg9)
 ## After Preprocessing - Plots
 
 ```{r}
-movie2 = read.csv("preprocessing/imdb_first_step_cleaning.csv")
-attach(movie2)
+#movie2 = read.csv("preprocessing/imdb_first_step_cleaning.csv")
+#attach(movie2)
 ```
 
 ```{r}
-summary(movie2)
+#summary(movie2)
 ```
 
 ```{r}
-f1 = as.data.frame(table(movie2$plot_topic1))
-f1
+#f1 = as.data.frame(table(movie2$plot_topic1))
+#f1
 ```
 ```{r}
-f2 = as.data.frame(table(movie2$colour_film))
-f2
+#f2 = as.data.frame(table(movie2$colour_film))
+#f2
 ```
 
 
