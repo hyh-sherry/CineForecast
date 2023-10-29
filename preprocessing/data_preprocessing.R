@@ -75,15 +75,42 @@ vif(reg5)
 ## Outlier
 ### Film characteristics
 qqPlot(reg1, envelope=list(style="none"))
+plot(reg1) # normal q-q plot show that point 492 seems to be an outlier.
 outlierTest(reg1)
 
 ### Cast characteristics
 qqPlot(reg2, envelope=list(style="none"))
+plot(reg2)
 outlierTest(reg2)
 
 ### Production characteristics
 qqPlot(reg3, envelope=list(style="none"))
+plot(reg3)
 outlierTest(reg3)
+
+
+### remove the outlier and rerun reg1, reg2, reg3
+imdb_alt <- imdb[-c(492), ]
+reg1.1 <- lm(imdb_score ~ movie_budget + release_day + as.factor(release_month) +
+               release_year + duration + as.factor(language) + as.factor(country) +
+               as.factor(maturity_rating) + aspect_ratio +
+               nb_news_articles + as.factor(colour_film) +
+               nb_faces + action + adventure + scifi + thriller + musical + romance +
+               western + sport + horror + drama + war + animation + crime +
+               movie_meter_IMDBpro + biography + comedy + music +
+               fantasy + history + mystery + family + documentary + plot_topic1 +
+               plot_topic2 + plot_topic3 + plot_topic4 + plot_topic5 + plot_topic6 +
+               plot_topic7 + plot_topic8, data = imdb_alt)
+summary(reg1.1) # R^2 improved by 0.02 compared with reg1
+
+reg2.1 <- lm(imdb_score ~ as.factor(actor1) +
+               actor1_star_meter + as.factor(actor2) + actor2_star_meter +
+               as.factor(actor3) + actor3_star_meter, data = imdb_alt)
+summary(reg2.1) # No significant change compared with reg2
+
+reg3.1 <- lm(imdb_score ~ as.factor(distributor) + as.factor(director) + 
+               as.factor(cinematographer) + as.factor(production_company), data = imdb_alt)
+summary(reg3.1) # No significant change compared with reg3
 
 # Step 3: EXPLORE VARIABLE RELATIONSHIPS
 ## Correlation coefficient between y and each x
@@ -136,4 +163,12 @@ residualPlots(reg2)
 summary(reg3) # could be used for feature selection
 residualPlot(reg3) # linear as the test shown
 residualPlots(reg3)
+
+# Output the dataset without outlier
+path_output = "/Users/sunnygao/Desktop/midterm_project/preprocessing/imdb_without_outlier.csv"
+write.csv(imdb_alt, file = path_output, row.names = FALSE)
+
+
+
+
 
