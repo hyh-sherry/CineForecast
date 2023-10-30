@@ -17,6 +17,7 @@ require(methods)
 png(file="plots/hist_imdb_score.png", width=1000, height=600)
 hist(imdb_score, breaks = 100, col = "skyblue")
 
+## Numerical Variables
 #### Movie Budget
 png(file="plots/hist_movie_budget.png", width=1000, height=600)
 hist(movie_budget, breaks = 50, col = "skyblue")
@@ -160,9 +161,47 @@ summary(movie_meter_IMDBpro)
 reg9 = lm(imdb_score ~ movie_meter_IMDBpro)
 summary(reg9)
 
+## Categorical Variables
+#### Release Month
+barplot(table(imdb$release_month), names.arg = unique(release_month), 
+        xlab = "release_month", ylab = "Frequency", main = "Release Month Distribution")
+reg11 = lm(imdb_score ~ release_month)
+summary(reg11)
 
-   
-   
-   
+#### Language
+barplot(table(language), names.arg = unique(language), 
+        xlab = "language", ylab = "Frequency", main = "Language Distribution")
+table(language)
+reg12 = lm(imdb_score ~ language)
+summary(reg12)
+
+#### Country
+barplot(table(country), names.arg = unique(country), 
+        xlab = "country", ylab = "Frequency", main = "Country Distribution")
+table(country)
+reg13 = lm(imdb_score ~ country)
+summary(reg13)
+
+#### Maturity Rating
+barplot(table(maturity_rating), names.arg = unique(maturity_rating), 
+        xlab = "maturity_rating", ylab = "Frequency", main = "Maturity Rating Distribution")
+table(maturity_rating)
+reg14 = lm(imdb_score ~ maturity_rating)
+summary(reg14)
+
+#### Production Company
+barplot(table(production_company), names.arg = unique(production_company), 
+        xlab = "production_company", ylab = "Frequency", main = "Production Company Distribution")
+production_freq = table(production_company)
+production_freq[production_freq > 80]
+reg15 = lm(imdb_score ~ production_company)
+summary(reg15)
+
+
+
+
+
+
+
    
    
