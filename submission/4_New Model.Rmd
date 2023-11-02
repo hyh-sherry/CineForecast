@@ -281,6 +281,7 @@ print(pred_test)
 ```
 
 ```{r}
+library(stargazer)
 stargazer(model_final_lm_all,title="Results", align=TRUE,
           dep.var.labels=c("IMDb Score"), 
           covariate.labels=c("Release Year", "Movie Budget", 
