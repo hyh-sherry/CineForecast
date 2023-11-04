@@ -2,7 +2,7 @@
 
 Team: Ge Gao, Hongyi Zhan, Yu Lu, Yanhuan Huang
 
-<img src="plots/readme_png.png" width="200">
+<img src="plots/readme_png.png" width="1000">
 
 ## Overview
 
