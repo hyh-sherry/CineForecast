@@ -57,4 +57,13 @@ In predictive performance, the model achieved an R-squared value of 0.4191, expl
 - **Pandas**
 - **numpy**
 
+## Team contributions
+
+- **Ge Gao**: Focused on data preprocessing and Latent Dirichlet Allocation (LDA). This involved cleaning and organizing the raw data to make it suitable for analysis and using LDA to uncover latent topics that might influence IMDb ratings.
+
+- **Hongyi Zhan**: Concentrated on the modeling and testing phase. This included developing predictive models based on the preprocessed data and rigorously testing these models to ensure accuracy and reliability in predicting IMDb ratings.
+
+- **Yu Lu**: Responsible for reporting. This role entailed documenting the methodologies, findings, and insights derived from the data analysis and modeling, and presenting them in a coherent and understandable manner.
+
+- **Yanhuan Huang**: Focused on Exploratory Data Analysis (EDA) and visualization. This task involved exploring the data to find patterns, anomalies, trends, or relationships and using visual tools to illustrate these findings, which can provide intuitive insights into the data set.
   
